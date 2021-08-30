@@ -1,6 +1,7 @@
 #include <vector>
 
 #include "innovation.hpp"
+#include "random.hpp"
 
 namespace NEAT {
   class Genome {
@@ -41,7 +42,7 @@ namespace NEAT {
         bool enabled;
         Link(unsigned int _id, unsigned int _from, unsigned int _to, double _weight, bool _enabled): 
           id(_id), from(_from), to(_to), weight(_weight), enabled(_enabled) {}
-        bool operator < (const Link& other) {
+        bool operator < (const Link& other) const {
           return id < other.id;
         }
       };
@@ -57,7 +58,8 @@ namespace NEAT {
       
       std::vector<Link> links; //all edges/links in the genome
       std::vector<Gene> genes; //all vertexes/genes in the genome
-      std::unordered_map<unsigned int,int> index_table;
+      std::unordered_map<unsigned int,int> gene_table;
+      std::unordered_map<unsigned int,int> link_table;
       const int inputs;
       const int outputs;
       //
@@ -72,16 +74,16 @@ namespace NEAT {
       //
       
       //mutation
-      void mutate_weight_shift(Link& l);
-      void mutate_weight_random(Link& l);
-      void mutate_link_activation(Link& l);
-      void mutate_add_link(InnovationTable& it);
-      void mutate_add_gene(InnovationTable& it);
+      void mutate_all_links();
+      void mutate_weight(Link& l, Random& r);
+      void mutate_link_activation(Link& l, Random& r);
+      void mutate_add_link(InnovationTable& it, Random& r);
+      void mutate_add_gene(InnovationTable& it, Random& r);
       //
 
       //add to structure
-      void add_gene(int from, int to, gene_type type, float x, float y, InnovationTable& it);
-      void add_link(int from, int to, double weight, bool enabled, InnovationTable& it);
+      int add_gene(int from, int to, gene_type type, float x, float y, InnovationTable& it);
+      int add_link(int from, int to, double weight, bool enabled, InnovationTable& it);
       //
   };
   Genome crossover(Genome& a, Genome& b);
