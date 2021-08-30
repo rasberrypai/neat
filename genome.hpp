@@ -5,20 +5,21 @@
 namespace NEAT {
   class Genome {
     public:
-      //Constructor - basic network where all inputs + bias are connected to all outputs
+      //Constructors
+      //create basic network where all inputs + bias are connected to all outputs
       Genome(const int _inputs, const int _outputs, InnovationTable& it);
       //
 
       //breeding
-      friend crossover(Genome& a, Genome& b);
+      friend Genome crossover(Genome& a, Genome& b);
       //
 
       //compatability
-      get_compatability_score(Genome& other);
+      double get_compatability_score(Genome& other);
       //
 
       //mutation
-      mutate(InnovationTable& it);
+      void mutate(InnovationTable& it);
       //
 
       //visual representation of network
@@ -56,16 +57,32 @@ namespace NEAT {
       
       std::vector<Link> links; //all edges/links in the genome
       std::vector<Gene> genes; //all vertexes/genes in the genome
+      std::unordered_map<unsigned int,int> index_table;
       const int inputs;
       const int outputs;
       //
+      
+      //private Constructor
+      //create off of vector input
+      //Genome(const int _inputs, const int _outputs, std::vector<Gene> _genes, std::vector<Link> _links);
+      //
 
       //fitness
-      
+      double fitness;
       //
       
       //mutation
+      void mutate_weight_shift(Link& l);
+      void mutate_weight_random(Link& l);
+      void mutate_link_activation(Link& l);
+      void mutate_add_link(InnovationTable& it);
+      void mutate_add_gene(InnovationTable& it);
+      //
 
+      //add to structure
+      void add_gene(int from, int to, gene_type type, float x, float y, InnovationTable& it);
+      void add_link(int from, int to, double weight, bool enabled, InnovationTable& it);
       //
   };
+  Genome crossover(Genome& a, Genome& b);
 }

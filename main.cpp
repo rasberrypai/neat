@@ -13,8 +13,9 @@ void init() {
   
   NEAT::InnovationTable it;
   NEAT::Genome g(2,1,it);
+  g.mutate(it);
   g.draw();
-  
+
   glFlush();
 }
 
