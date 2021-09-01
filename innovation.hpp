@@ -1,4 +1,7 @@
-#include <unordered_map>
+#ifndef INNOVATION_H
+#define INNOVATION_H
+
+#include<unordered_map>
 
 namespace NEAT {
   class InnovationTable {
@@ -26,3 +29,4 @@ namespace NEAT {
   };
 }
 
+#endif

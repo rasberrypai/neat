@@ -1,3 +1,6 @@
+#ifndef RANDOM_H
+#define RANDOM_H
+
 #include <random>
 
 namespace NEAT {
@@ -19,3 +22,5 @@ namespace NEAT {
       std::mt19937 gen;
   };
 }
+
+#endif

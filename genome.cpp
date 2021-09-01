@@ -13,7 +13,7 @@
 using namespace NEAT;
 
 Genome::Genome(const int _inputs, const int _outputs, InnovationTable& it): 
-  inputs(_inputs), outputs(_outputs) {
+  inputs(_inputs), outputs(_outputs), evaluated(false) {
   int i;
   int o;
   unsigned int id;
@@ -39,10 +39,19 @@ Genome::Genome(const int _inputs, const int _outputs, InnovationTable& it):
       add_link(i,o+inputs+1,1,true,it);
     }
   }
+  mutate_all_links();
 }
 
 //Genome::Genome(const int _inputs, const int _outputs, std::vector<Gene> _genes, std::vector<Link> _links):
 //  inputs(_inputs), outputs(_outputs), genes(_genes), links(_links) {}
+
+double Genome::get_fitness() {
+  if (!evaluated) {
+    fitness = evaluate();
+    evaluated = 1;
+  }
+  return fitness;
+}
 
 double Genome::get_compatability_score(Genome& other) {
   return 0;
@@ -144,7 +153,7 @@ void Genome::mutate_add_link(InnovationTable& it, Random& r) {
     if (genes[higher].y < genes[lower].y) {
       int swp = lower;
       lower = higher;
-      higher = lower;
+      higher = swp;
     }
     if (genes[lower].y < genes[higher].y && add_link(genes[lower].id,genes[higher].id,1,1,it)) { 
       return;
@@ -213,7 +222,7 @@ int Genome::add_link(int from, int to, double weight, bool enabled, InnovationTa
   if (link_table.count(id)) {
     return 0;
   }
-  link_table.insert(std::make_pair(id,links.size()));
+  link_table.insert(id);
   links.push_back(Link(id,from,to,weight,enabled));
   
   //maintain order

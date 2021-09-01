@@ -1,7 +1,18 @@
+#ifndef GENOME_H
+#define GENOME_H
+
 #include <vector>
+#include <unordered_set>
 
 #include "innovation.hpp"
 #include "random.hpp"
+
+//HACK
+namespace NEAT { //forward declaration to deal with codependency
+  class Genome;
+}
+
+#include "gnn.hpp"
 
 namespace NEAT {
   class Genome {
@@ -9,6 +20,10 @@ namespace NEAT {
       //Constructors
       //create basic network where all inputs + bias are connected to all outputs
       Genome(const int _inputs, const int _outputs, InnovationTable& it);
+      //
+
+      //fitness
+      double get_fitness();
       //
 
       //breeding
@@ -59,7 +74,7 @@ namespace NEAT {
       std::vector<Link> links; //all edges/links in the genome
       std::vector<Gene> genes; //all vertexes/genes in the genome
       std::unordered_map<unsigned int,int> gene_table;
-      std::unordered_map<unsigned int,int> link_table;
+      std::unordered_set<unsigned int> link_table;
       const int inputs;
       const int outputs;
       //
@@ -71,6 +86,9 @@ namespace NEAT {
 
       //fitness
       double fitness;
+      bool evaluated;
+      friend class Network;
+      double evaluate();
       //
       
       //mutation
@@ -88,3 +106,5 @@ namespace NEAT {
   };
   Genome crossover(Genome& a, Genome& b);
 }
+
+#endif
