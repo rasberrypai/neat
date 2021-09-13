@@ -9,3 +9,6 @@
 #define MUTATE_WEIGHT_RANDOM 10.0 //percent
 #define WEIGHT_SHIFT_STRENGTH 2.5 //num
 #define WEIGHT_RAND_STRENGTH 5.0 //num
+
+//REPRODUCTION
+#define MIN_SPECIES_SIZE 2

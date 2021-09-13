@@ -18,8 +18,12 @@ namespace NEAT {
   class Genome {
     public:
       //Constructors
+      //default
+      Genome();
+      //creates empty genome that expects inputs and outputs
+      Genome(int _inputs,int _outputs);
       //create basic network where all inputs + bias are connected to all outputs
-      Genome(const int _inputs, const int _outputs, InnovationTable& it);
+      Genome(int _inputs,int _outputs, InnovationTable& it);
       //
 
       //fitness
@@ -27,7 +31,7 @@ namespace NEAT {
       //
 
       //breeding
-      friend Genome crossover(Genome& a, Genome& b);
+      friend void crossover(Genome& a, Genome& b, Genome& result);
       //
 
       //compatability
@@ -60,6 +64,12 @@ namespace NEAT {
         bool operator < (const Link& other) const {
           return id < other.id;
         }
+        bool operator > (const Link& other) const {
+          return id > other.id;
+        }
+        bool operator == (const Link& other) const {
+          return id == other.id;
+        }
       };
       //represents a vertex in the genome graph
       struct Gene {
@@ -75,8 +85,8 @@ namespace NEAT {
       std::vector<Gene> genes; //all vertexes/genes in the genome
       std::unordered_map<unsigned int,int> gene_table;
       std::unordered_set<unsigned int> link_table;
-      const int inputs;
-      const int outputs;
+      int inputs;
+      int outputs;
       //
       
       //private Constructor
@@ -101,10 +111,12 @@ namespace NEAT {
 
       //add to structure
       int add_gene(int from, int to, gene_type type, float x, float y, InnovationTable& it);
+      int add_gene(Gene& g);
       int add_link(int from, int to, double weight, bool enabled, InnovationTable& it);
+      int add_link(Link& l);
       //
   };
-  Genome crossover(Genome& a, Genome& b);
+  void crossover(Genome& a, Genome& b);
 }
 
 #endif

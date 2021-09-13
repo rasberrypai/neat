@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <cmath>
 
 using namespace NEAT;
 
@@ -114,7 +115,7 @@ double Network::Vertex::get_value() {
 }
 
 double Network::Vertex::activation_function(double x) {
-  return x;
+  return x/(1+abs(x));
 }
 
 int Network::Vertex::get_depth() {

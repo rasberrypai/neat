@@ -12,7 +12,15 @@
 
 using namespace NEAT;
 
-Genome::Genome(const int _inputs, const int _outputs, InnovationTable& it): 
+//useless
+Genome::Genome() {
+
+}
+
+Genome::Genome(int _inputs, int _outputs):
+  inputs(_inputs), outputs(_outputs), evaluated(false) {}
+
+Genome::Genome(int _inputs, int _outputs, InnovationTable& it): 
   inputs(_inputs), outputs(_outputs), evaluated(false) {
   int i;
   int o;
@@ -207,31 +215,100 @@ void Genome::mutate_add_gene(InnovationTable& it, Random& r) {
 //return 0 on failure (duplicate gene); 1 otherwise
 int Genome::add_gene(int from, int to, gene_type type, float x, float y, InnovationTable& it) {
   unsigned int id = it.get_innovation(from,to,true);
-  if (gene_table.count(id)) { //already exists in genome 
+  Gene g(id,type,x,y);
+  return add_gene(g);
+}
+
+int Genome::add_gene(Gene& g) {
+  if (gene_table.count(g.id)) { //already exists in genome 
     return 0; 
   }
-  gene_table.insert(std::make_pair(id,genes.size()));
-  genes.push_back(Gene(id,type,x,y));
+  gene_table.insert(std::make_pair(g.id,genes.size()));
+  genes.push_back(g);
   return 1;
+  
 }
 
 //Adds new Edge/Link to Genome/Graph
 //return 0 on failure (duplicate link); 1 otherwise
 int Genome::add_link(int from, int to, double weight, bool enabled, InnovationTable& it) {
   unsigned int id = it.get_innovation(from,to,false);
-  if (link_table.count(id)) {
+  Link l(id,from,to,weight,enabled);
+  return add_link(l);
+}
+
+int Genome::add_link(Link& l) {
+  if (link_table.count(l.id)) {
     return 0;
   }
-  link_table.insert(id);
-  links.push_back(Link(id,from,to,weight,enabled));
-  
-  //maintain order
+  link_table.insert(l.id);
+  links.push_back(l);
   if (links.size() > 1 && links.back() < links[links.size()-2]) {
     std::sort(links.begin(),links.end());
   }
   return 1;
 }
 
-Genome NEAT::crossover(Genome& a, Genome& b) {
-   
-}
+void NEAT::crossover(Genome& a, Genome& b, Genome& result) {
+  //FIXME - allow random object to be passed in as parameter
+  Random r;
+  
+  bool a_dom = false;
+  //decide which genome is dominant
+  //prioritize fitness and then gene size in case of ties
+  if (a.get_fitness() == b.get_fitness()) {
+    if (a.genes.size() == b.genes.size()) { //choose at random
+      if (r.get_int(0,1)) {
+        a_dom = true;
+      }
+    } else if (a.genes.size() < b.genes.size()){
+      a_dom = true;
+    }
+  } else if (a.get_fitness() > b.get_fitness()) {
+    a_dom = true;
+  }
+
+  int ai = 0;
+  int bi = 0;
+
+  //result links
+  while (ai < a.links.size() && bi < b.links.size()) {
+    if (a.links[ai] == b.links[bi]) { //choose randomly
+      if (r.get_int(0,1)) {
+        result.add_link(a.links[ai]); 
+      } else {
+        result.add_link(b.links[bi]);
+      }
+      ai++;
+      bi++;
+    } else if (a.links[ai] > b.links[bi]) { //b is disjoint
+      if (!a_dom) {
+        result.add_link(b.links[bi]);
+      }
+      bi++;
+    } else { //a is disjoint
+      if (a_dom) {
+        result.add_link(a.links[ai]);
+      }
+      ai++;
+    }
+  }
+
+  if (a_dom) {
+    while (ai < a.links.size()) {
+      result.add_link(a.links[ai]);
+      ai++;
+    }
+    for (ai = 0; ai < a.genes.size(); ai++) {
+      result.add_gene(a.genes[ai]);
+    } 
+  } else {
+    while (bi < b.links.size()) {
+      result.add_link(b.links[bi]);
+      bi++;
+    }
+    for (bi = 0; bi < b.genes.size(); bi++) {
+      result.add_gene(b.genes[bi]);
+    }
+  }
+}  

@@ -1,21 +1,43 @@
 #include "genome.hpp"
 
 #include <iostream>
+#include <cmath>
 
 using namespace NEAT;
 
 double Genome::evaluate() {
-  std::cout << "INPUT:" << std::endl;
-  for (int i = 0; i < links.size(); i++) {
-    std::cout << links[i].weight << std::endl;
-  }
+  double fitness = 0;
 
   Network n (*this);
 
-  double input[2] = {1.4,2.6};
-  n.evaluate(input,2);
-  
-  std::cout << "OUTPUT: " << n.get_output(0) << std::endl;
+  double output;
 
-  return 0;
+  double input[2] = {0.0,0.0};
+
+  n.evaluate(input,2);
+  output = n.get_output(0);
+  output = output/(1+abs(output));
+  fitness += output*output;
+
+  input[1] = 1.0;
+  n.evaluate(input,2);
+  output = n.get_output(0);
+  output = output/(1+abs(output));
+  fitness += (1-output)*(1-output);
+
+  input[0] = 1.0;
+  input[1] = 0.0;
+  n.evaluate(input,2);
+  output = n.get_output(0);
+  output = output/(1+abs(output));
+  fitness += (1-output)*(1-output);
+
+  input[0] = 0.0;
+  input[1] = 1.0;
+  n.evaluate(input,2);
+  output = n.get_output(0);
+  output = output/(1+abs(output));
+  fitness += output*output;
+
+  return 4 - fitness;
 }
