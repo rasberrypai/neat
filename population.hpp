@@ -24,7 +24,7 @@ namespace NEAT {
           void update_staleness();
           bool add(Genome& g, double tolerance);
           bool is_dead();
-          void get_child(Genome& result, Random r = Random());
+          void get_child(Genome& result,Random& r);
           double get_avg_fitness();
           double get_max_fitness();
           double get_total_fitness();
@@ -38,6 +38,7 @@ namespace NEAT {
           double best_fitness;
           int staleness;
       };
+      Random rand;
       InnovationTable innov_table;
       std::vector<Species> species;
       int generation;

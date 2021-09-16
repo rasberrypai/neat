@@ -23,7 +23,7 @@ namespace NEAT {
       //creates empty genome that expects inputs and outputs
       Genome(int _inputs,int _outputs);
       //create basic network where all inputs + bias are connected to all outputs
-      Genome(int _inputs,int _outputs, InnovationTable& it);
+      Genome(int _inputs,int _outputs, InnovationTable& it, Random &r);
       //
 
       //fitness
@@ -31,7 +31,7 @@ namespace NEAT {
       //
 
       //breeding
-      friend void crossover(Genome& a, Genome& b, Genome& result);
+      friend void crossover(Genome& a, Genome& b, Genome& result, Random& r);
       //
 
       //compatability
@@ -39,7 +39,7 @@ namespace NEAT {
       //
 
       //mutation
-      void mutate(InnovationTable& it);
+      void mutate(InnovationTable& it, Random& r);
       //
 
       //visual representation of network
@@ -108,7 +108,7 @@ namespace NEAT {
       //
       
       //mutation
-      void mutate_all_links();
+      void mutate_all_links(Random& r);
       void mutate_weight(Link& l, Random& r);
       void mutate_link_activation(Link& l, Random& r);
       void mutate_add_link(InnovationTable& it, Random& r);
@@ -122,7 +122,7 @@ namespace NEAT {
       int add_link(Link& l);
       //
   };
-  void crossover(Genome& a, Genome& b, Genome& result);
+  void crossover(Genome& a, Genome& b, Genome& result, Random& r);
 }
 
 #endif

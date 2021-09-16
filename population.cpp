@@ -10,7 +10,7 @@ Population::Population(int pop_size, int _inputs, int _outputs):
   generation(0), inputs(_inputs), outputs(_outputs), size(pop_size), 
   compat_tolerance(INIT_COMPAT_TOLERANCE) {
     for (int i = 0; i < pop_size; i++) {
-      Genome g(inputs,outputs,innov_table);
+      Genome g(inputs,outputs,innov_table,rand);
       addToSpecies(g); 
     }
   }
@@ -57,12 +57,11 @@ void Population::next_generation() {
   std::vector<Genome> children;
   //breed only if species.avg_fitness / population.total_avg_fitness * population.size >= 1
   //add children - keep best genome of each species
-  Random r;
   for (int s = 0; s < species.size(); s++) {
     int num_children = species[s].get_avg_fitness() / avg_fitness * size - 1;
     for (int c = 0; c < num_children && children.size() < size; c++) {
       Genome g(inputs,outputs);
-      species[s].get_child(g,r);
+      species[s].get_child(g,rand);
       children.push_back(g);
     }
     species[s].cull_weak();
@@ -70,14 +69,14 @@ void Population::next_generation() {
   //if not enough new children
   //  pick random species - breed child and add to a species
   while(children.size() < size - species.size()) {
-    int rand_species = r.get_int(0,species.size()-1);
+    int rand_species = rand.get_int(0,species.size()-1);
     children.push_back(species[rand_species].get_best());
   }
 
   //add all children to species
   for (int i = 0; i < children.size(); i++) {
     children[i].set_evaluated(false);
-    children[i].mutate(innov_table);
+    children[i].mutate(innov_table,rand);
     addToSpecies(children[i]);
   }
 
@@ -156,7 +155,7 @@ bool Population::Species::is_dead() {
 }
 
 //assume sorted
-void Population::Species::get_child(Genome& result, Random r) {
+void Population::Species::get_child(Genome& result, Random& r) {
   if (genomes.size() == 0) {
     return;
   }
@@ -164,7 +163,7 @@ void Population::Species::get_child(Genome& result, Random r) {
   int left = r.get_int(0,r.get_int(0,genomes.size()*(SURVIVAL_THRESHOLD / 100.0)));
   int right = r.get_int(0,r.get_int(0,genomes.size()*(SURVIVAL_THRESHOLD / 100.0)));
   if (r.get_float(0,1) < CROSSOVER_CHANCE / 100.0) {
-    crossover(genomes[left],genomes[right],result);
+    crossover(genomes[left],genomes[right],result,r);
   } else {
     result = genomes[left];
   }

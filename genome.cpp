@@ -20,7 +20,7 @@ Genome::Genome() {
 Genome::Genome(int _inputs, int _outputs):
   inputs(_inputs), outputs(_outputs), evaluated(false) {}
 
-Genome::Genome(int _inputs, int _outputs, InnovationTable& it): 
+Genome::Genome(int _inputs, int _outputs, InnovationTable& it, Random& r): 
   inputs(_inputs), outputs(_outputs), evaluated(false) {
   int i;
   int o;
@@ -47,7 +47,7 @@ Genome::Genome(int _inputs, int _outputs, InnovationTable& it):
       add_link(i,o+inputs+1,1,true,it);
     }
   }
-  mutate_all_links();
+  mutate_all_links(r);
 }
 
 //Genome::Genome(const int _inputs, const int _outputs, std::vector<Gene> _genes, std::vector<Link> _links):
@@ -105,9 +105,8 @@ double Genome::get_compatability_score(Genome& other) {
          WEIGHT_COEFF * avg_weight;
 }
 
-void Genome::mutate(InnovationTable& it) {
-  mutate_all_links();
-  Random r;
+void Genome::mutate(InnovationTable& it, Random& r) {
+  mutate_all_links(r);
   mutate_add_link(it,r);
   mutate_add_gene(it,r);
 }
@@ -164,8 +163,7 @@ bool Genome::operator > (const Genome& other) const {
 
 //Attempts to mutate all links
 //OPTIMIZE: multi-thread
-void Genome::mutate_all_links() {
-  Random r; //if multi-threaded initialize within thread function
+void Genome::mutate_all_links(Random& r) {
   for (int i = 0; i < links.size(); i++) {
     mutate_weight(links[i],r);
   }
@@ -301,10 +299,8 @@ int Genome::add_link(Link& l) {
   return 1;
 }
 
-void NEAT::crossover(Genome& a, Genome& b, Genome& result) {
+void NEAT::crossover(Genome& a, Genome& b, Genome& result, Random& r) {
   //FIXME - allow random object to be passed in as parameter
-  Random r;
-  
   bool a_dom = false;
   //decide which genome is dominant
   //prioritize fitness and then gene size in case of ties
