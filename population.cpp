@@ -2,11 +2,13 @@
 #include "parameters.hpp"
 
 #include <iostream>
+#include <algorithm>
 
 using namespace NEAT;
 
 Population::Population(int pop_size, int _inputs, int _outputs):
-  generation(0), inputs(_inputs), outputs(_outputs), size(pop_size) {
+  generation(0), inputs(_inputs), outputs(_outputs), size(pop_size), 
+  compat_tolerance(INIT_COMPAT_TOLERANCE) {
     for (int i = 0; i < pop_size; i++) {
       Genome g(inputs,outputs,innov_table);
       addToSpecies(g); 
@@ -80,6 +82,14 @@ void Population::next_generation() {
   }
 
   generation++;
+  if (species.size() < NUM_TARGET_SPECIES) {
+    compat_tolerance -= DELTA_COMPAT_TOLERANCE;
+    if (compat_tolerance <= 0) {
+      compat_tolerance = DELTA_COMPAT_TOLERANCE;
+    }
+  } else if(species.size() > NUM_TARGET_SPECIES) {
+    compat_tolerance += DELTA_COMPAT_TOLERANCE;
+  }
 }
 
 int Population::get_generation() {
@@ -97,7 +107,7 @@ double Population::get_max_fitness() {
 void Population::addToSpecies(Genome& g) {
   bool speciesFound = false;
   for (int i = 0; i < species.size(); i++) {
-    if (species[i].add(g)) {
+    if (species[i].add(g,compat_tolerance)) {
       speciesFound = true;
       break;
     }
@@ -132,8 +142,8 @@ void Population::Species::update_staleness() {
 }
 
 //assume sorted
-bool Population::Species::add(Genome& g) {
-  if (get_best().get_compatability_score(g) < COMPAT_TOLERANCE) {
+bool Population::Species::add(Genome& g, double tolerance) {
+  if (get_best().get_compatability_score(g) < tolerance) {
     genomes.push_back(g);
     total_fitness += g.get_fitness();
     return true;

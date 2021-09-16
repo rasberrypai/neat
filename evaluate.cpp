@@ -6,8 +6,11 @@
 using namespace NEAT;
 
 double Genome::evaluate() {
-  double fitness = 0;
 
+  double fitness = 0;
+  
+
+  //5-10 microseconds
   Network n (*this);
 
   double output;
@@ -19,6 +22,7 @@ double Genome::evaluate() {
                         {1.0,1.0,0.0}
                        };
 
+  //0-1 microsecond
   for (int i = 0; i < 4; i++) {
     n.evaluate(input[i],2);
     output = n.get_output(0);

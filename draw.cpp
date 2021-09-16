@@ -1,5 +1,6 @@
 #include "draw.hpp"
 
+#define GL_SILENCE_DEPRECATION
 #include <GLUT/glut.h>
 #include <cmath>
 

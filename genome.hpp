@@ -122,7 +122,7 @@ namespace NEAT {
       int add_link(Link& l);
       //
   };
-  void crossover(Genome& a, Genome& b);
+  void crossover(Genome& a, Genome& b, Genome& result);
 }
 
 #endif

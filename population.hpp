@@ -22,7 +22,7 @@ namespace NEAT {
           Species(Genome& g);
           void sort();
           void update_staleness();
-          bool add(Genome& g);
+          bool add(Genome& g, double tolerance);
           bool is_dead();
           void get_child(Genome& result, Random r = Random());
           double get_avg_fitness();
@@ -44,6 +44,8 @@ namespace NEAT {
       int inputs;
       int outputs;
       int size;
+
+      double compat_tolerance;
 
       double total_fitness;
       double max_fitness;
