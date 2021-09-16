@@ -1,9 +1,9 @@
 //NOTE MUTATE_WEIGHT_SHIFT and MUTATE_WEIGHT_RANDOM are dependent
 
 //MUTATION
-#define MUTATE_LINK 15.0 //percent
+#define MUTATE_LINK 5.0 //percent
 #define FIND_LINK_TRIES 5.0 //num
-#define MUTATE_GENE 13.0 //percent
+#define MUTATE_GENE 3.0 //percent
 #define MUTATE_LINK_TOGGLE 5.0 //percent
 #define MUTATE_WEIGHT 80.0 //percent
 #define MUTATE_WEIGHT_RANDOM 10.0 //percent
