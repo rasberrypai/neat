@@ -62,7 +62,47 @@ double Genome::get_fitness() {
 }
 
 double Genome::get_compatability_score(Genome& other) {
-  return 0;
+  int this_size = links.size();
+  int other_size = other.links.size();
+
+  int excess = 0;
+  int disjoint = 0;
+  int same = 0;
+  double avg_weight = 0;
+
+  int ti = 0;
+  int oi = 0;
+  while (ti < this_size && oi < other_size) {
+    if (links[ti] == other.links[oi]) { //choose randomly
+      avg_weight += abs(links[ti].weight - other.links[oi].weight);
+      same++;
+      ti++;
+      oi++;
+    } else if (links[ti] > other.links[oi]) { //other is disjoint
+      disjoint++;
+      oi++;
+    } else { //this is disjoint
+      disjoint++;
+      ti++;
+    }
+  }
+  
+  if (links.back() > other.links.back()) {
+    excess = this_size - ti;   
+  } else if (links.back() < other.links.back()) {
+    excess = other_size - oi;
+  }
+
+  if (avg_weight > 0) {
+    avg_weight /= 1.0 * same;
+  }
+
+  int n = this_size < other_size ? other_size : this_size;
+  n = n < 20 ? 1 : n;
+
+  return EXCESS_COEFF * 1.0 * excess / n + 
+         DISJOINT_COEFF * 1.0 * disjoint / n + 
+         WEIGHT_COEFF * avg_weight;
 }
 
 void Genome::mutate(InnovationTable& it) {
@@ -110,6 +150,18 @@ Genome::~Genome() {
   
 }
 
+void Genome::set_evaluated(bool e) {
+  evaluated = e;
+}
+
+bool Genome::operator < (const Genome& other) const {
+  return fitness < other.fitness;
+}
+
+bool Genome::operator > (const Genome& other) const {
+  return fitness > other.fitness;
+}
+
 //Attempts to mutate all links
 //OPTIMIZE: multi-thread
 void Genome::mutate_all_links() {
@@ -127,9 +179,9 @@ void Genome::mutate_weight(Link& l, Random& r) {
     return; //mutation failed
   }
   if (r.get_float(0,1) < MUTATE_WEIGHT_RANDOM / 100.0) { //random change
-    l.weight = r.get_float(0,1) * WEIGHT_RAND_STRENGTH;
+    l.weight = r.get_float(-1,1) * WEIGHT_RAND_STRENGTH;
   } else {
-    l.weight += r.get_float(0,1) * WEIGHT_SHIFT_STRENGTH; //uniform pertrube
+    l.weight += r.get_float(-1,1) * WEIGHT_SHIFT_STRENGTH; //uniform pertrube
   }
 }
 
@@ -163,7 +215,7 @@ void Genome::mutate_add_link(InnovationTable& it, Random& r) {
       lower = higher;
       higher = swp;
     }
-    if (genes[lower].y < genes[higher].y && add_link(genes[lower].id,genes[higher].id,1,1,it)) { 
+    if (genes[lower].y < genes[higher].y && add_link(genes[lower].id,genes[higher].id,r.get_float(-1,1) * WEIGHT_RAND_STRENGTH,true,it)) { 
       return;
     }
   }
@@ -278,6 +330,9 @@ void NEAT::crossover(Genome& a, Genome& b, Genome& result) {
         result.add_link(a.links[ai]); 
       } else {
         result.add_link(b.links[bi]);
+      }
+      if (r.get_float(0,1) < FORCE_ENABLE) {
+        result.links.back().enabled = true;
       }
       ai++;
       bi++;

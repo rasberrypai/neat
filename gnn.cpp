@@ -115,7 +115,7 @@ double Network::Vertex::get_value() {
 }
 
 double Network::Vertex::activation_function(double x) {
-  return x/(1+abs(x));
+  return 0.5 * (x*4.9)/(1+abs(x*4.9)) + 0.5;
 }
 
 int Network::Vertex::get_depth() {

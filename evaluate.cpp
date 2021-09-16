@@ -12,32 +12,19 @@ double Genome::evaluate() {
 
   double output;
 
-  double input[2] = {0.0,0.0};
+  double input[4][3] = {
+                        {0.0,0.0,0.0},
+                        {0.0,1.0,1.0},
+                        {1.0,0.0,1.0},
+                        {1.0,1.0,0.0}
+                       };
 
-  n.evaluate(input,2);
-  output = n.get_output(0);
-  output = output/(1+abs(output));
-  fitness += output*output;
+  for (int i = 0; i < 4; i++) {
+    n.evaluate(input[i],2);
+    output = n.get_output(0);
+    output = 0.5*(output*4.9)/(1+abs(output*4.9))+0.5;
+    fitness += abs(input[i][2] - output);
+  }
 
-  input[1] = 1.0;
-  n.evaluate(input,2);
-  output = n.get_output(0);
-  output = output/(1+abs(output));
-  fitness += (1-output)*(1-output);
-
-  input[0] = 1.0;
-  input[1] = 0.0;
-  n.evaluate(input,2);
-  output = n.get_output(0);
-  output = output/(1+abs(output));
-  fitness += (1-output)*(1-output);
-
-  input[0] = 0.0;
-  input[1] = 1.0;
-  n.evaluate(input,2);
-  output = n.get_output(0);
-  output = output/(1+abs(output));
-  fitness += output*output;
-
-  return 4 - fitness;
+  return (4 - fitness)*(4-fitness);
 }

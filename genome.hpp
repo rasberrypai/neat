@@ -49,6 +49,12 @@ namespace NEAT {
       //Destructor
       ~Genome();
       //
+      
+      void set_evaluated(bool e);
+
+      bool operator < (const Genome& other) const;
+      bool operator > (const Genome& other) const;
+
     private:
       //structure
       enum gene_type {INPUT,HIDDEN,OUTPUT,BIAS};
