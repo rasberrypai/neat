@@ -3,8 +3,8 @@
 //MUTATION
 #define MUTATE_LINK 5.0 //percent
 #define FIND_LINK_TRIES 5.0 //num
-#define MUTATE_GENE 3.0 //percent
-#define MUTATE_LINK_TOGGLE 5.0 //percent
+#define MUTATE_GENE 5.0 //percent
+#define MUTATE_LINK_TOGGLE 0.5 //percent
 #define MUTATE_WEIGHT 80.0 //percent
 #define MUTATE_WEIGHT_RANDOM 10.0 //percent
 #define WEIGHT_SHIFT_STRENGTH 2.5 //num
@@ -16,7 +16,7 @@
 #define WEIGHT_COEFF 0.4 //num
 
 //SPECIATION
-#define NUM_TARGET_SPECIES 10 //num - number of species wanted
+#define NUM_TARGET_SPECIES 15 //num - number of species wanted
 #define INIT_COMPAT_TOLERANCE 3.0 //num - initial tolerance of population
 #define DELTA_COMPAT_TOLERANCE 0.1 //num - change of tolerance every generation
 #define STALE_THRESHOLD 15 //num - # of generations that a species cannot show improvement before death

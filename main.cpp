@@ -9,7 +9,7 @@
 #define INPUT_SIZE 2
 #define OUTPUT_SIZE 1
 
-NEAT::Population pop(POP_SIZE,INPUT_SIZE,OUTPUT_SIZE);
+/*NEAT::Population pop(POP_SIZE,INPUT_SIZE,OUTPUT_SIZE);
 bool play = false;
 
 void reshape(int,int);
@@ -71,11 +71,11 @@ void draw_genome() {
   pop.get_best().draw();
 
   glFlush();
-}
+}*/
 
 int main(int argc, char **argv) {
   
-  glutInit(&argc, argv);
+  /*glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_RGBA);
   glutInitWindowPosition(200,100);
   glutInitWindowSize(1000, 1000);
@@ -88,6 +88,25 @@ int main(int argc, char **argv) {
   glutKeyboardFunc(keyboard);
   init();
 
-  glutMainLoop(); 
+  glutMainLoop();*/
+
+  int total_generations = 0;
+  int num_trials = 1000;
+
+  for (int i = 0; i < num_trials; i++) {
+    NEAT::Population pop(POP_SIZE,INPUT_SIZE,OUTPUT_SIZE);
+    while (1) {
+      pop.evaluate();
+      if(pop.get_max_fitness() == 16) {
+        break;
+      }
+      pop.next_generation();
+    }
+    total_generations += pop.get_generation();
+    std::cout << "Trial " << i+1 << " Complete" << std::endl;
+  }
+
+  std::cout << "Average Generations to Train: " << total_generations / num_trials << std::endl;
+
   return 0;
 }

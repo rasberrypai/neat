@@ -15,11 +15,11 @@ double Genome::evaluate() {
 
   double output;
 
-  double input[4][3] = {
+  double input[5][3] = {
                         {0.0,0.0,0.0},
                         {0.0,1.0,1.0},
-                        {1.0,0.0,1.0},
-                        {1.0,1.0,0.0}
+                        {1.0,1.0,0.0},
+                        {1.0,0.0,1.0}
                        };
 
   //0-1 microsecond
@@ -27,7 +27,9 @@ double Genome::evaluate() {
     n.evaluate(input[i],2);
     output = n.get_output(0);
     output = 0.5*(output*4.9)/(1+abs(output*4.9))+0.5;
-    fitness += abs(input[i][2] - output);
+    if (i % 2 == 0 && output >= 0.5 || i % 2 != 0 && output <= 0.5) {
+      fitness += abs(input[i][2] - output);
+    }
   }
 
   return (4 - fitness)*(4-fitness);
